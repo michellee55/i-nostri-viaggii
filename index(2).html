@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#fff7fa">
+<title>I nostri viaggi ♡</title>
+<style>
+:root{--bg:#fff7fa;--card:#fff;--ink:#3d3037;--muted:#9a858e;--pink:#d88eab;--soft:#f8e7ee;--line:#efd9e2}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}.app{max-width:520px;margin:auto;min-height:100vh;padding-bottom:90px}
+button,input,textarea,select{font:inherit}button{cursor:pointer}.page{padding:24px 18px}.hero{padding:52px 20px 24px;background:linear-gradient(#fae8ef,#fff7fa)}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:1.7px;color:#a36d83;font-weight:800}.hero h1{font-size:32px;line-height:1;margin:8px 0}.hero p{color:var(--muted);margin:0;font-size:14px}
+.section{display:flex;justify-content:space-between;align-items:center;margin:18px 2px 10px}.section h2{font-size:19px;margin:0}.add,.primary{border:0;background:var(--soft);color:#965b74;border-radius:15px;padding:9px 12px;font-weight:800}.primary{background:#3d3037;color:#fff}
+.trip-card{border:1px solid var(--line);background:#fff;border-radius:24px;overflow:hidden;width:100%;text-align:left;padding:0;margin-bottom:12px;box-shadow:0 8px 24px #6d3e520b}.trip-cover{height:155px;background:linear-gradient(135deg,#efc4d5,#e6b39d,#afd7df);display:flex;align-items:flex-end;padding:16px;color:#fff;position:relative;background-size:cover;background-position:center}.trip-cover:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent,#0008)}.trip-cover div{position:relative;z-index:1}.trip-cover h3{font-size:25px;margin:0}.trip-cover p{font-size:12px;margin:4px 0}.trip-foot{padding:11px 13px;display:flex;justify-content:space-between;color:var(--muted);font-size:11px}
+.back{border:0;background:none;color:#995d76;font-weight:800;padding:0;margin-bottom:18px}.cover{height:205px;border-radius:25px;background:linear-gradient(135deg,#efc4d5,#e6b39d,#afd7df);background-size:cover;background-position:center;display:flex;align-items:flex-end;padding:18px;color:#fff;position:relative;overflow:hidden}.cover:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent,#0009)}.cover div{position:relative;z-index:1}.cover h2{font-size:29px;margin:0}.cover p{margin:5px 0;font-size:13px}.stats{display:flex;gap:8px;margin:12px 0 20px}.stat{flex:1;background:#fff;border:1px solid var(--line);border-radius:17px;text-align:center;padding:11px}.stat b{display:block;font-size:18px}.stat span{font-size:10px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.tile{min-height:130px;border:1px solid var(--line);background:#fff;border-radius:21px;padding:15px;text-align:left;box-shadow:0 7px 22px #753f560b}.tile .ico{font-size:27px}.tile h3{margin:8px 0 4px;font-size:16px}.tile p{margin:0;color:var(--muted);font-size:11px;line-height:1.35}
+.day{background:#fff;border:1px solid var(--line);border-radius:21px;margin-bottom:11px;overflow:hidden}.dayhead{padding:15px;display:flex;justify-content:space-between;align-items:center}.dayhead h3{margin:0;font-size:16px}.dayhead small{color:var(--muted)}.daybody{padding:0 15px 15px}.item{border-left:3px solid #e5a8c1;padding:8px 0 8px 11px;margin-top:6px}.item b{font-size:11px;color:#a06079}.item strong{display:block;font-size:14px;margin:2px 0}.item span{font-size:12px;color:var(--muted)}.tag{display:inline-block;background:var(--soft);color:#89566c;border-radius:9px;padding:4px 6px;font-size:10px;margin:5px 4px 0 0}
+.row{background:#fff;border:1px solid var(--line);border-radius:17px;padding:12px;margin:8px 0;display:flex;gap:10px;align-items:center}.row-main{flex:1;min-width:0}.row strong{font-size:14px}.row small{display:block;color:var(--muted);font-size:11px;margin-top:3px}.row input[type=checkbox]{width:20px;height:20px;accent-color:#cf83a4}.x{border:0;background:none;color:#b16e86;font-size:20px}.summary{background:#fff;border:1px solid var(--line);border-radius:20px;padding:15px;margin-bottom:15px}.progress{height:8px;background:#f0dfe6;border-radius:10px;margin-top:10px;overflow:hidden}.bar{height:100%;background:var(--pink);width:0}.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.photo{aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--soft);border:0;padding:0}.photo img{width:100%;height:100%;object-fit:cover}
+.tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);height:70px;background:#fffdfdea;backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;justify-content:space-around;z-index:5}.tabs button{border:0;background:none;color:#9b8991;font-size:10px}.tabs b{display:block;font-size:19px}.tabs .active{color:#b25e81}
+.modal{display:none;position:fixed;inset:0;background:#0006;z-index:20;align-items:flex-end}.modal.show{display:flex}.sheet{width:min(520px,100%);background:#fff;border-radius:27px 27px 0 0;padding:20px;max-height:90vh;overflow:auto}.sheet h2{margin:0 0 15px}.field{margin:9px 0}.field label{display:block;font-size:10px;text-transform:uppercase;color:#8d7881;font-weight:800;margin-bottom:5px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:13px;padding:11px;background:#fff}.save{width:100%;border:0;border-radius:14px;padding:12px;background:#3d3037;color:#fff;font-weight:800;margin-top:8px}.cancel{width:100%;border:0;background:none;color:#9b6078;padding:11px}
+.viewer{display:none;position:fixed;inset:0;background:#141214;z-index:30;align-items:center;justify-content:center}.viewer.show{display:flex}.viewer img{max-width:95%;max-height:82%;object-fit:contain}.close{position:absolute;right:18px;top:25px;border:0;border-radius:50%;width:42px;height:42px;background:#fff2;color:#fff;font-size:27px}.hidden{display:none!important}
+.transition{position:fixed;inset:0;background:#fff8fbf5;backdrop-filter:blur(8px);z-index:50;display:none;align-items:center;justify-content:center}.transition.show{display:flex;animation:fade .25s}.anim{font-size:75px;animation:open .9s ease both}.caption{position:absolute;bottom:27%;color:#94707f;font-weight:700}
+@keyframes fade{from{opacity:0}to{opacity:1}}@keyframes open{0%{transform:scale(.65) rotate(-8deg);opacity:0}60%{transform:scale(1.08) rotate(3deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+</style>
+</head>
+<body>
+<div class="app">
+<section id="home">
+<header class="hero"><div class="eyebrow">Michelle & Matteo</div><h1>I nostri viaggi ✈️</h1><p>I nostri ricordi, tutti in un posto ♡</p></header>
+<main class="page">
+<div class="stats"><div class="stat"><b id="tripCount">0</b><span>viaggi</span></div><div class="stat"><b id="memoryCount">0</b><span>ricordi</span></div></div>
+<div class="section"><h2>🌍 I vostri viaggi</h2><button class="add" onclick="newTrip()">＋ Nuovo</button></div>
+<div id="trips"></div>
+</main></section>
+
+<section id="trip" class="hidden">
+<header class="hero"><button class="back" onclick="go('home')">‹ I nostri viaggi</button><div class="cover" id="tripCover"><div><h2 id="tripName"></h2><p id="tripMeta"></p></div></div></header>
+<main class="page">
+<div class="stats"><div class="stat"><b id="tripDays"></b><span>giorni</span></div><div class="stat"><b id="tripMem"></b><span>ricordi</span></div><div class="stat"><b id="tripCountdown">—</b><span>alla partenza</span></div></div>
+<div class="grid">
+<button class="tile" onclick="go('itinerary','📅')"><div class="ico">📅</div><h3>Itinerario</h3><p>Giorno per giorno</p></button>
+<button class="tile" onclick="go('bagM','🧳')"><div class="ico">🎀</div><h3>Valigia Michelle</h3><p>La mia valigia</p></button>
+<button class="tile" onclick="go('bagT','🧳')"><div class="ico">🩵</div><h3>Valigia Matteo</h3><p>La sua valigia</p></button>
+<button class="tile" onclick="go('bookings','🎟️')"><div class="ico">🎟️</div><h3>Prenotazioni</h3><p>Biglietti e conferme</p></button>
+<button class="tile" onclick="go('gallery','📸')"><div class="ico">📸</div><h3>Foto & Video</h3><p>I vostri ricordi</p></button>
+<button class="tile" onclick="go('diary','📖')"><div class="ico">📝</div><h3>Diario</h3><p>Quello che non volete dimenticare</p></button>
+</div>
+</main></section>
+
+<section id="itinerary" class="hidden"><header class="hero"><button class="back" onclick="go('trip')">‹ Il nostro viaggio</button><div class="eyebrow">Il nostro itinerario</div><h1>Giorno per giorno 📅</h1><p>Le vostre giornate, come le avete immaginate.</p></header><main class="page"><div id="days"></div></main></section>
+
+<section id="bagM" class="hidden"><header class="hero"><button class="back" onclick="go('trip')">‹ Il nostro viaggio</button><div class="eyebrow">La mia valigia</div><h1>Valigia Michelle 🎀</h1></header><main class="page"><div class="summary"><b id="bm"></b><div class="progress"><div class="bar" id="bmbar"></div></div><small id="bmtext"></small></div><button class="add" onclick="addBag('m')">＋ Aggiungi cosa da portare</button><div id="bagML"></div></main></section>
+
+<section id="bagT" class="hidden"><header class="hero"><button class="back" onclick="go('trip')">‹ Il nostro viaggio</button><div class="eyebrow">La sua valigia</div><h1>Valigia Matteo 🩵</h1></header><main class="page"><div class="summary"><b id="bt"></b><div class="progress"><div class="bar" id="btbar"></div></div><small id="bttext"></small></div><button class="add" onclick="addBag('t')">＋ Aggiungi cosa da portare</button><div id="bagTL"></div></main></section>
+
+<section id="bookings" class="hidden"><header class="hero"><button class="back" onclick="go('trip')">‹ Il nostro viaggio</button><div class="eyebrow">Le vostre prenotazioni</div><h1>Prenotazioni 🎟️</h1></header><main class="page"><button class="add" onclick="addBooking()">＋ Aggiungi prenotazione</button><div id="bookingList"></div></main></section>
+
+<section id="gallery" class="hidden"><header class="hero"><button class="back" onclick="go('trip')">‹ Il nostro viaggio</button><div class="eyebrow">I vostri ricordi</div><h1>Foto & Video 📸</h1></header><main class="page"><div class="grid"><button class="tile" onclick="filterGallery('Michelle')">🎀<h3>Michelle</h3></button><button class="tile" onclick="filterGallery('Matteo')">🩵<h3>Matteo</h3></button><button class="tile" onclick="filterGallery('Panorama')">🌅<h3>Panorama</h3></button><button class="tile" onclick="filterGallery('Insieme')">🫶<h3>Insieme</h3></button></div><div class="section"><h2 id="galleryTitle">Foto</h2><button class="add" onclick="photoPicker()">＋ Aggiungi</button></div><input id="photoInput" class="hidden" type="file" accept="image/*" multiple onchange="savePhotos(this)"><div id="galleryGrid" class="gallery"></div></main></section>
+
+<section id="diary" class="hidden"><header class="hero"><button class="back" onclick="go('trip')">‹ Il nostro viaggio</button><div class="eyebrow">Il nostro diario</div><h1>Diario 📝</h1></header><main class="page"><button class="add" onclick="addMemory()">＋ Nuovo ricordo</button><div id="diaryList"></div></main></section>
+
+<nav class="tabs"><button onclick="go('trip')"><b>✈️</b>Viaggio</button><button onclick="go('itinerary','📅')"><b>📅</b>Itinerario</button><button onclick="go('gallery','📸')"><b>📸</b>Ricordi</button><button onclick="go('diary','📖')"><b>📝</b>Diario</button></nav>
+</div>
+
+<div id="modal" class="modal" onclick="if(event.target===this)closeModal()"><div class="sheet"><h2 id="modalTitle"></h2><div id="modalBody"></div><button class="save" onclick="saveModal()">Salva</button><button class="cancel" onclick="closeModal()">Annulla</button></div></div>
+<div id="viewer" class="viewer"><button class="close" onclick="closeViewer()">×</button><img id="viewerImg"></div>
+<div id="transition" class="transition"><div class="anim" id="anim">✈️</div><div class="caption" id="caption"></div></div>
+
+<script>
+const KEY="nostri-viaggi-nuova-v1";
+const SUPABASE_URL="https://hpdlhkzynvbyhypeoivn.supabase.co";
+const SUPABASE_KEY="sb_publishable_6FrqX6qaZidylge8pXVEqA_TQm32MQ-";
+let SPACE_ID=null;
+let data={trips:[],active:null};
+let action=null,filter="Tutte";
+async function api(path, options={}){
+  const res=await fetch(SUPABASE_URL+"/rest/v1/"+path,{
+    ...options,
+    headers:{
+      "apikey":SUPABASE_KEY,
+      "Authorization":"Bearer "+SUPABASE_KEY,
+      "Content-Type":"application/json",
+      "Prefer":"return=representation",
+      ...(options.headers||{})
+    }
+  });
+  if(!res.ok) throw new Error(await res.text());
+  return res.status===204?null:res.json();
+}
+async function initShared(){
+  try{
+    const spaces=await api("couple_space?select=id&limit=1");
+    SPACE_ID=spaces[0]?.id;
+    if(!SPACE_ID) throw new Error("Spazio condiviso non trovato");
+    const rows=await api("app_state?select=state&space_id=eq."+SPACE_ID+"&limit=1");
+    if(rows[0]?.state && Object.keys(rows[0].state).length) data=rows[0].state;
+    render();
+  }catch(e){
+    console.error(e);
+    const cached=localStorage.getItem(KEY);
+    if(cached) data=JSON.parse(cached);
+    render();
+  }
+}
+let saveTimer=null;
+async function save(){
+  localStorage.setItem(KEY,JSON.stringify(data));
+  renderHome();if(data.active!==null)renderTrip();
+  if(!SPACE_ID)return;
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(async()=>{
+    try{
+      await api("app_state?on_conflict=space_id",{method:"POST",body:JSON.stringify({space_id:SPACE_ID,state:data,updated_at:new Date().toISOString()})});
+    }catch(e){console.error("Salvataggio condiviso non riuscito",e)}
+  },250);
+}
+
+const screens=["home","trip","itinerary","bagM","bagT","bookings","gallery","diary"];
+function save(){localStorage.setItem(KEY,JSON.stringify(data));renderHome();if(data.active!==null)renderTrip()}
+function go(id,icon="✈️"){
+ if(id==="home"||id==="trip"){screens.forEach(x=>document.getElementById(x).classList.add("hidden"));document.getElementById(id).classList.remove("hidden");render();scrollTo(0,0);return}
+ const tr=document.getElementById("transition");document.getElementById("anim").textContent=icon;document.getElementById("caption").textContent=icon==="🧳"?"Apriamo la valigia…":icon==="📖"?"Apriamo il diario…":icon==="📸"?"Prepariamo i ricordi…":icon==="🎟️"?"Controlliamo le prenotazioni…":"Vediamo la giornata…";tr.classList.add("show");
+ setTimeout(()=>{tr.classList.remove("show");screens.forEach(x=>document.getElementById(x).classList.add("hidden"));document.getElementById(id).classList.remove("hidden");render();scrollTo(0,0)},850)
+}
+function render(){renderHome();renderTrip();renderDays();renderBags();renderBookings();renderGallery();renderDiary()}
+function renderHome(){document.getElementById("tripCount").textContent=data.trips.length;document.getElementById("memoryCount").textContent=data.trips.reduce((n,t)=>n+(t.diary?.length||0)+(t.photos?.length||0),0);const r=document.getElementById("trips");r.innerHTML=data.trips.map((t,i)=>`<button class="trip-card" onclick="openTrip(${i})"><div class="trip-cover" style="${t.photo?`background-image:url('${t.photo}')`:''}"><div><h3>${esc(t.name)}</h3><p>${esc(t.country||"")} · ${esc(t.start||"")} — ${esc(t.end||"")}</p></div></div><div class="trip-foot"><span>${days(t).length} giorni · ${(t.diary||[]).length+(t.photos||[]).length} ricordi</span><span>Apri ›</span></div></button>`).join("")||`<div class="summary" style="text-align:center;color:var(--muted)">Crea il vostro primo viaggio con ＋ Nuovo 💗</div>`}
+function newTrip(){open("Nuovo viaggio",`<div class="field"><label>Nome città</label><input id="tn" placeholder="Es. Nome città"></div><div class="field"><label>Paese</label><input id="tc" placeholder="Es. Italia"></div><div class="field"><label>Data inizio</label><input id="ts" type="date"></div><div class="field"><label>Data fine</label><input id="te" type="date"></div><div class="field"><label>Foto di sfondo</label><input id="tp" type="file" accept="image/*"></div>`,()=>{const f=document.getElementById("tp").files[0];if(f){const rd=new FileReader();rd.onload=e=>createTrip(e.target.result);rd.readAsDataURL(f)}else createTrip("")})}
+function createTrip(photo){let n=document.getElementById("tn").value.trim()||"Nome città",c=document.getElementById("tc").value.trim(),s=document.getElementById("ts").value,e=document.getElementById("te").value;if(!s||!e){alert("Inserisci entrambe le date.");return}let t={name:n,country:c,start:s,end:e,photo,days:makeDays(s,e),bags:{m:[],t:[]},bookings:[],photos:[],diary:[]};data.trips.push(t);data.active=data.trips.length-1;closeModal();save();go("trip")}
+function makeDays(s,e){let a=[],d=new Date(s+"T12:00:00"),z=new Date(e+"T12:00:00"),i=1;while(d<=z){a.push({date:d.toLocaleDateString("it-IT",{day:"numeric",month:"long"}),title:i===1?"Arrivo":"Giornata da organizzare",items:[],outfit:{m:"",t:""},carry:[]});d.setDate(d.getDate()+1);i++}return a}
+function days(t){return t.days||[]}
+function openTrip(i){data.active=i;save();go("trip")}
+function current(){return data.trips[data.active]}
+function renderTrip(){let t=current();if(!t)return;document.getElementById("tripName").textContent=t.name+" ✈️";document.getElementById("tripMeta").textContent=(t.country? t.country+" · ":"")+t.start+" — "+t.end;document.getElementById("tripCover").style.backgroundImage=t.photo?`url('${t.photo}')`:"linear-gradient(135deg,#efc4d5,#e6b39d,#afd7df)";document.getElementById("tripDays").textContent=t.days.length;document.getElementById("tripMem").textContent=t.photos.length+t.diary.length;let q=Math.ceil((new Date(t.start)-new Date())/86400000);document.getElementById("tripCountdown").textContent=q>0?q:"♡"}
+function renderDays(){let t=current(),r=document.getElementById("days");if(!t||!r)return;r.innerHTML=t.days.map((d,i)=>`<div class="day"><div class="dayhead" onclick="editDay(${i})"><div><h3>Giorno ${i+1} · ${d.date}</h3><small>${esc(d.title)}</small></div><span>›</span></div><div class="daybody">${d.items.map((x,j)=>`<div class="item"><b>${esc(x.time||"—")}</b><strong>${esc(x.name)}</strong><span>${esc(x.details||"")}</span>${x.booking!=null?`<div class="tag">🎟️ Prenotazione collegata</div>`:""}</div>`).join("")||`<div style="font-size:12px;color:var(--muted)">Nessuna attività ancora.</div>`}<div style="margin-top:10px"><button class="tag" onclick="editOutfit(${i})">👗 Outfit</button><button class="tag" onclick="editCarry(${i})">🎒 ${d.carry.length} cose da portare</button><button class="tag" onclick="go('gallery','📸')">📸 Foto</button><button class="tag" onclick="go('diary','📖')">📝 Diario</button></div></div></div>`).join("")}
+function editDay(i){let t=current(),d=t.days[i];
+open("Giorno "+(i+1),`<div class="field"><label>Nome giornata</label><input id="dn" value="${attr(d.title)}"></div><div class="field"><label>Attività</label>${d.items.map((x,j)=>`<div class="row"><div class="row-main"><strong>${esc(x.name||"Attività")}</strong><small>${esc(x.time||"—")}${x.details?" · "+esc(x.details):""}</small></div><button class="x" onclick="removeActivity(${i},${j})">×</button></div>`).join("")}<button class="add" onclick="addActivity(${i})">＋ Aggiungi attività</button></div><div class="field"><label>Outfit</label><div class="row"><div class="row-main"><strong>🎀 Michelle</strong><small>${esc(d.outfit.m||"Nessun outfit inserito")}</small></div><button class="add" onclick="editOutfit(${i})">Modifica</button></div><div class="row"><div class="row-main"><strong>🩵 Matteo</strong><small>${esc(d.outfit.t||"Nessun outfit inserito")}</small></div><button class="add" onclick="editOutfit(${i})">Modifica</button></div></div><div class="field"><label>Cose da portare</label><div class="row"><div class="row-main"><strong>🎒 ${d.carry.length} elementi</strong><small>${esc(d.carry.join(" · ")||"Nessuna cosa inserita")}</small></div><button class="add" onclick="editCarry(${i})">Modifica</button></div></div>`,()=>{d.title=document.getElementById("dn").value;save()})}
+function removeActivity(i,j){current().days[i].items.splice(j,1);save();closeModal();setTimeout(()=>editDay(i),50)}
+function editOutfit(i){let d=current().days[i];open("👗 Outfit della giornata",`<div class="field"><label>Outfit Michelle</label><input id="om" value="${attr(d.outfit.m)}" placeholder="Nome outfit"></div><div class="field"><label>Foto outfit Michelle</label><input id="omf" type="file" accept="image/*"></div><div class="field"><label>Outfit Matteo</label><input id="ot" value="${attr(d.outfit.t)}" placeholder="Nome outfit"></div><div class="field"><label>Foto outfit Matteo</label><input id="otf" type="file" accept="image/*"></div>`,()=>{d.outfit.m=document.getElementById("om").value;d.outfit.t=document.getElementById("ot").value;const fm=document.getElementById("omf").files[0],ft=document.getElementById("otf").files[0];const finish=()=>{save();renderDays()};if(fm){let r=new FileReader();r.onload=e=>{d.outfit.mPhoto=e.target.result;if(ft){let q=new FileReader();q.onload=z=>{d.outfit.tPhoto=z.target.result;finish()};q.readAsDataURL(ft)}else finish()};r.readAsDataURL(fm)}else if(ft){let q=new FileReader();q.onload=e=>{d.outfit.tPhoto=e.target.result;finish()};q.readAsDataURL(ft)}else finish()})}
+function editCarry(i){let d=current().days[i];open("🎒 Cose da portare",`<div class="field"><label>Lista</label><textarea id="cc" rows="8" placeholder="Una cosa per riga">${esc(d.carry.join("\n"))}</textarea></div>`,()=>{d.carry=document.getElementById("cc").value.split("\n").map(x=>x.trim()).filter(Boolean);save()})}
+function addActivity(i){closeModal();setTimeout(()=>open("Nuova attività",`<div class="field"><label>Nome attività</label><input id="an"></div><div class="field"><label>Orario</label><input id="at" type="time"></div><div class="field"><label>Dettagli</label><textarea id="ax" rows="3"></textarea></div><div class="field"><label>Prenotazione</label><select id="ab"><option value="">Nessuna</option>${current().bookings.map((b,j)=>`<option value="${j}">${esc(b.name)}</option>`).join("")}</select></div>`,()=>{current().days[i].items.push({name:document.getElementById("an").value||"Nuova attività",time:document.getElementById("at").value,details:document.getElementById("ax").value,booking:document.getElementById("ab").value===""?null:+document.getElementById("ab").value});save()}),100)}
+function renderBags(){let t=current();if(!t)return;["m","t"].forEach(w=>{let a=t.bags[w],done=a.filter(x=>x.done).length,p=a.length?Math.round(done/a.length*100):0;document.getElementById(w==="m"?"bm":"bt").textContent=done+" / "+a.length;document.getElementById(w==="m"?"bmbar":"btbar").style.width=p+"%";document.getElementById(w==="m"?"bmtext":"bttext").textContent=p+"% pronta";document.getElementById(w==="m"?"bagML":"bagTL").innerHTML=a.map((x,i)=>`<div class="row"><input type="checkbox" ${x.done?"checked":""} onchange="toggleBag('${w}',${i})"><div class="row-main"><strong>${esc(x.name)}</strong></div><button class="x" onclick="current().bags['${w}'].splice(${i},1);save()">×</button></div>`).join("")})}
+function addBag(w){open("＋ Aggiungi cosa da portare",`<div class="field"><label>Cosa?</label><input id="bagName"></div>`,()=>{let n=document.getElementById("bagName").value.trim();if(n)current().bags[w].push({name:n,done:false});save()})}
+function toggleBag(w,i){current().bags[w][i].done=!current().bags[w][i].done;save()}
+function renderBookings(){let t=current(),r=document.getElementById("bookingList");if(!t||!r)return;r.innerHTML=t.bookings.map((b,i)=>`<div class="row"><div class="row-main"><strong>${esc(b.name)}</strong><small>Giorno ${b.day+1} · ${b.start||"—"}${b.end?" — "+b.end:""} · ${esc(b.place||"")}</small>${b.notes?`<small>Note private: ${esc(b.notes)}</small>`:""}${b.link?`<small><a href="${attr(b.link)}" target="_blank">🔗 Apri prenotazione</a></small>`:""}${b.pdf?`<small>📄 ${esc(b.pdf)}</small>`:""}</div><button class="x" onclick="t.bookings.splice(${i},1);save()">×</button></div>`).join("")||`<div class="summary">Nessuna prenotazione ancora.</div>`}
+function addBooking(){let t=current();open("＋ Nuova prenotazione",`<div class="field"><label>Nome</label><input id="bn"></div><div class="field"><label>Giorno</label><select id="bd">${t.days.map((d,i)=>`<option value="${i}">Giorno ${i+1} · ${d.date}</option>`).join("")}</select></div><div class="field"><label>Ora inizio</label><input id="bs" type="time"></div><div class="field"><label>Ora fine</label><input id="be" type="time"></div><div class="field"><label>Punto di incontro</label><input id="bp"></div><div class="field"><label>Note private</label><textarea id="bnote" rows="3"></textarea></div><div class="field"><label>Link prenotazione</label><input id="bl" type="url"></div><div class="field"><label>PDF biglietti</label><input id="bpdf" type="file" accept="application/pdf"></div>`,()=>{let f=document.getElementById("bpdf").files[0];t.bookings.push({name:document.getElementById("bn").value||"Prenotazione",day:+document.getElementById("bd").value,start:document.getElementById("bs").value,end:document.getElementById("be").value,place:document.getElementById("bp").value,notes:document.getElementById("bnote").value,link:document.getElementById("bl").value,pdf:f?f.name:""});save()})}
+function renderGallery(){let t=current(),r=document.getElementById("galleryGrid");if(!t||!r)return;let a=t.photos.filter(p=>filter==="Tutte"||p.cat===filter);document.getElementById("galleryTitle").textContent=filter==="Tutte"?"Foto":filter;r.innerHTML=a.map(p=>`<button class="photo" onclick="view('${p.url}')"><img src="${p.url}"></button>`).join("")||`<div style="grid-column:1/-1;color:var(--muted);font-size:13px">Nessuna foto in questa categoria.</div>`}
+function filterGallery(x){filter=x;renderGallery()}
+function photoPicker(){open("📸 Aggiungi foto",`<div class="field"><label>Categoria</label><select id="pc"><option>Michelle</option><option>Matteo</option><option>Panorama</option><option>Insieme</option></select></div><div class="field"><label>Foto</label><input id="pi" type="file" accept="image/*" multiple></div><div class="field"><label>Giorno</label><select id="pg">${current().days.map((d,i)=>`<option value="${i}">Giorno ${i+1} · ${d.date}</option>`).join("")}</select></div>`,()=>{let fs=[...document.getElementById("pi").files],cat=document.getElementById("pc").value,day=+document.getElementById("pg").value;fs.forEach(f=>{let rd=new FileReader();rd.onload=e=>{current().photos.push({url:e.target.result,cat,day});save()};rd.readAsDataURL(f)})})}
+function view(url){document.getElementById("viewerImg").src=url;document.getElementById("viewer").classList.add("show")}
+function closeViewer(){document.getElementById("viewer").classList.remove("show")}
+function renderDiary(){let t=current(),r=document.getElementById("diaryList");if(!t||!r)return;r.innerHTML=t.diary.map((m,i)=>`<div class="row" style="display:block"><div style="display:flex"><div class="row-main"><strong>${esc(m.author)} · ${esc(m.day)}</strong><small>${esc(m.title||"Ricordo")}</small></div><button class="x" onclick="t.diary.splice(${i},1);save()">×</button></div><p style="font-size:13px;line-height:1.45">${esc(m.text)}</p>${m.photo?`<div class="photo" style="width:100px"><img src="${m.photo}"></div>`:""}<div style="margin-top:10px"><button class="add" onclick="addComment(${i})">💬 ${m.comments?.length||0} commenti · Aggiungi commento</button></div><div style="margin-top:8px">${(m.comments||[]).map(c=>`<div style="background:var(--soft);border-radius:12px;padding:8px 10px;margin-top:6px;font-size:12px"><b>${esc(c.author)}</b><br>${esc(c.text)}</div>`).join("")}</div></div>`).join("")||`<div class="summary">Ancora nessun ricordo. Scrivete il primo 💗</div>`}
+function addMemory(){let t=current();open("＋ Nuovo ricordo",`<div class="field"><label>Chi lo ha scritto?</label><select id="ma"><option>Michelle</option><option>Matteo</option></select></div><div class="field"><label>Giorno</label><select id="md">${t.days.map((d,i)=>`<option value="${i}">Giorno ${i+1} · ${d.date}</option>`).join("")}</select></div><div class="field"><label>Titolo</label><input id="mt"></div><div class="field"><label>Ricordo</label><textarea id="mx" rows="5"></textarea></div><div class="field"><label>Foto opzionale</label><input id="mf" type="file" accept="image/*"></div>`,()=>{let f=document.getElementById("mf").files[0],base={author:document.getElementById("ma").value,day:t.days[+document.getElementById("md").value].date,title:document.getElementById("mt").value,text:document.getElementById("mx").value,photo:"",comments:[]};if(f){let rd=new FileReader();rd.onload=e=>{base.photo=e.target.result;t.diary.push(base);save()};rd.readAsDataURL(f)}else{t.diary.push(base);save()}})}
+function addComment(i){let m=current().diary[i];open("💬 Aggiungi commento",`<div class="field"><label>Chi commenta?</label><select id="ca"><option>Michelle</option><option>Matteo</option></select></div><div class="field"><label>Commento</label><textarea id="ct" rows="4" placeholder="Scrivi un commento…"></textarea></div>`,()=>{m.comments=m.comments||[];const text=document.getElementById("ct").value.trim();if(text)m.comments.push({author:document.getElementById("ca").value,text});save()})}
+function open(title,body,fn){document.getElementById("modalTitle").textContent=title;document.getElementById("modalBody").innerHTML=body;action=fn;document.getElementById("modal").classList.add("show")}
+function saveModal(){if(action)action();closeModal()}function closeModal(){document.getElementById("modal").classList.remove("show");action=null}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}function attr(s){return esc(s)}
+initShared();
