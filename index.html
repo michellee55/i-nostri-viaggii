@@ -102,20 +102,23 @@ async function initShared(){
   }
 }
 let saveTimer=null;
+let savePending=false;
 async function save(){
   localStorage.setItem(KEY,JSON.stringify(data));
-  renderHome();if(data.active!==null)renderTrip();
+  render();
   if(!SPACE_ID)return;
+  savePending=true;
   clearTimeout(saveTimer);
   saveTimer=setTimeout(async()=>{
+    if(!savePending||!SPACE_ID)return;
     try{
       await api("app_state?on_conflict=space_id",{method:"POST",body:JSON.stringify({space_id:SPACE_ID,state:data,updated_at:new Date().toISOString()})});
+      savePending=false;
     }catch(e){console.error("Salvataggio condiviso non riuscito",e)}
   },250);
 }
 
 const screens=["home","trip","itinerary","bagM","bagT","bookings","gallery","diary"];
-function save(){localStorage.setItem(KEY,JSON.stringify(data));renderHome();if(data.active!==null)renderTrip()}
 function go(id,icon="✈️"){
  if(id==="home"||id==="trip"){screens.forEach(x=>document.getElementById(x).classList.add("hidden"));document.getElementById(id).classList.remove("hidden");render();scrollTo(0,0);return}
  const tr=document.getElementById("transition");document.getElementById("anim").textContent=icon;document.getElementById("caption").textContent=icon==="🧳"?"Apriamo la valigia…":icon==="📖"?"Apriamo il diario…":icon==="📸"?"Prepariamo i ricordi…":icon==="🎟️"?"Controlliamo le prenotazioni…":"Vediamo la giornata…";tr.classList.add("show");
@@ -153,4 +156,8 @@ function addComment(i){let m=current().diary[i];open("💬 Aggiungi commento",`<
 function open(title,body,fn){document.getElementById("modalTitle").textContent=title;document.getElementById("modalBody").innerHTML=body;action=fn;document.getElementById("modal").classList.add("show")}
 function saveModal(){if(action)action();closeModal()}function closeModal(){document.getElementById("modal").classList.remove("show");action=null}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}function attr(s){return esc(s)}
+document.addEventListener("DOMContentLoaded",()=>{
+  const add=document.querySelector("#home .section .add");
+  if(add)add.addEventListener("click",newTrip);
+});
 initShared();
