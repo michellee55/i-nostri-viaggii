@@ -28,7 +28,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}.page{padding:24
 <header class="hero"><div class="eyebrow">Michelle & Matteo</div><h1>I nostri viaggi ✈️</h1><p>I nostri ricordi, tutti in un posto ♡</p></header>
 <main class="page">
 <div class="stats"><div class="stat"><b id="tripCount">0</b><span>viaggi</span></div><div class="stat"><b id="memoryCount">0</b><span>ricordi</span></div></div>
-<div class="section"><h2>🌍 I vostri viaggi</h2><button class="add" onclick="newTrip()">＋ Nuovo</button></div>
+<div class="section"><h2>🌍 I vostri viaggi</h2><button type="button" class="add" id="newTripBtn">＋ Nuovo</button></div>
 <div id="trips"></div>
 </main></section>
 
@@ -86,56 +86,67 @@ async function api(path, options={}){
   if(!res.ok) throw new Error(await res.text());
   return res.status===204?null:res.json();
 }
+function normalizeData(x){
+  if(!x || typeof x!=="object") return {trips:[],active:null};
+  if(!Array.isArray(x.trips)) x.trips=[];
+  if(x.active!==null && (!Number.isInteger(x.active) || x.active<0 || x.active>=x.trips.length)) x.active=null;
+  return x;
+}
+
 async function initShared(){
   try{
     const rows=await api("app_state?select=state&space_id=eq."+SPACE_ID+"&limit=1");
-    if(rows[0]?.state && Object.keys(rows[0].state).length){
-      data=rows[0].state;
+    const cloud=normalizeData(rows[0]?.state);
+    const cachedRaw=localStorage.getItem(KEY);
+    const cached=cachedRaw?normalizeData(JSON.parse(cachedRaw)):null;
+
+    if(cloud.trips.length){
+      data=cloud;
+      localStorage.setItem(KEY,JSON.stringify(data));
+    }else if(cached && cached.trips.length){
+      data=cached;
+      await save();
     }else{
-      const cached=localStorage.getItem(KEY);
-      if(cached){
-        data=JSON.parse(cached);
-        await save();
-      }
+      data=cloud;
+      localStorage.setItem(KEY,JSON.stringify(data));
     }
     render();
   }catch(e){
-    console.error(e);
+    console.error("Errore caricamento condiviso",e);
     const cached=localStorage.getItem(KEY);
-    if(cached) data=JSON.parse(cached);
+    data=cached?normalizeData(JSON.parse(cached)):{trips:[],active:null};
     render();
   }
 }
 
-let saveTimer=null;
 let savePending=false;
 async function save(){
+  data=normalizeData(data);
   localStorage.setItem(KEY,JSON.stringify(data));
   render();
   if(!SPACE_ID)return;
+  if(savePending)return;
   savePending=true;
-  clearTimeout(saveTimer);
-  saveTimer=setTimeout(async()=>{
-    if(!savePending)return;
-    try{
-      const body={space_id:SPACE_ID,state:data,updated_at:new Date().toISOString()};
-      const updated=await api("app_state?space_id=eq."+SPACE_ID,{
-        method:"PATCH",
-        body:JSON.stringify({state:data,updated_at:body.updated_at})
+  try{
+    const body={space_id:SPACE_ID,state:data,updated_at:new Date().toISOString()};
+    const updated=await api("app_state?space_id=eq."+SPACE_ID,{
+      method:"PATCH",
+      body:JSON.stringify({state:data,updated_at:body.updated_at})
+    });
+    if(!updated || updated.length===0){
+      await api("app_state",{
+        method:"POST",
+        body:JSON.stringify(body)
       });
-      if(!updated || updated.length===0){
-        await api("app_state",{
-          method:"POST",
-          body:JSON.stringify(body)
-        });
-      }
-      savePending=false;
-      console.log("Salvataggio condiviso completato");
-    }catch(e){
-      console.error("Salvataggio condiviso non riuscito",e);
     }
-  },300);
+    console.log("Salvataggio condiviso completato");
+  }catch(e){
+    console.error("Salvataggio condiviso non riuscito",e);
+  }finally{
+    savePending=false;
+  }
 }
+
 const screens=["home","trip","itinerary","bagM","bagT","bookings","gallery","diary"];
 function go(id,icon="✈️"){
  if(id==="home"||id==="trip"){screens.forEach(x=>document.getElementById(x).classList.add("hidden"));document.getElementById(id).classList.remove("hidden");render();scrollTo(0,0);return}
@@ -175,7 +186,7 @@ function open(title,body,fn){document.getElementById("modalTitle").textContent=t
 function saveModal(){if(action)action();closeModal()}function closeModal(){document.getElementById("modal").classList.remove("show");action=null}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}function attr(s){return esc(s)}
 document.addEventListener("DOMContentLoaded",()=>{
-  const add=document.querySelector("#home .section .add");
+  const add=document.getElementById("newTripBtn");
   if(add)add.addEventListener("click",newTrip);
 });
 initShared();
