@@ -28,7 +28,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}.page{padding:24
 <header class="hero"><div class="eyebrow">Michelle & Matteo</div><h1>I nostri viaggi ✈️</h1><p>I nostri ricordi, tutti in un posto ♡</p></header>
 <main class="page">
 <div class="stats"><div class="stat"><b id="tripCount">0</b><span>viaggi</span></div><div class="stat"><b id="memoryCount">0</b><span>ricordi</span></div></div>
-<div class="section"><h2>🌍 I vostri viaggi</h2><button class="add" onclick="newTrip()">＋ Nuovo</button></div>
+<div class="section"><h2>🌍 I vostri viaggi</h2><button type="button" class="add" id="newTripBtn">＋ Nuovo</button></div>
 <div id="trips"></div>
 </main></section>
 
@@ -69,7 +69,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}.page{padding:24
 const KEY="nostri-viaggi-nuova-v1";
 const SUPABASE_URL="https://hpdlhkzynvbyhypeoivn.supabase.co";
 const SUPABASE_KEY="sb_publishable_6FrqX6qaZidylge8pXVEqA_TQm32MQ-";
-const SPACE_ID="933abaf2-3fbf-4ef6-b6d1-34835189836a";
+let SPACE_ID=null;
 let data={trips:[],active:null};
 let action=null,filter="Tutte";
 async function api(path, options={}){
@@ -88,16 +88,11 @@ async function api(path, options={}){
 }
 async function initShared(){
   try{
+    const spaces=await api("couple_space?select=id&limit=1");
+    SPACE_ID=spaces[0]?.id;
+    if(!SPACE_ID) throw new Error("Spazio condiviso non trovato");
     const rows=await api("app_state?select=state&space_id=eq."+SPACE_ID+"&limit=1");
-    if(rows[0]?.state && Object.keys(rows[0].state).length){
-      data=rows[0].state;
-    }else{
-      const cached=localStorage.getItem(KEY);
-      if(cached){
-        data=JSON.parse(cached);
-        await save();
-      }
-    }
+    if(rows[0]?.state && Object.keys(rows[0].state).length) data=rows[0].state;
     render();
   }catch(e){
     console.error(e);
@@ -106,7 +101,6 @@ async function initShared(){
     render();
   }
 }
-
 let saveTimer=null;
 let savePending=false;
 async function save(){
@@ -116,7 +110,7 @@ async function save(){
   savePending=true;
   clearTimeout(saveTimer);
   saveTimer=setTimeout(async()=>{
-    if(!savePending)return;
+    if(!savePending||!SPACE_ID)return;
     try{
       const body={space_id:SPACE_ID,state:data,updated_at:new Date().toISOString()};
       const updated=await api("app_state?space_id=eq."+SPACE_ID,{
@@ -130,52 +124,8 @@ async function save(){
         });
       }
       savePending=false;
-      console.log("Salvataggio condiviso completato");
     }catch(e){
       console.error("Salvataggio condiviso non riuscito",e);
     }
   },300);
-}
-const screens=["home","trip","itinerary","bagM","bagT","bookings","gallery","diary"];
-function go(id,icon="✈️"){
- if(id==="home"||id==="trip"){screens.forEach(x=>document.getElementById(x).classList.add("hidden"));document.getElementById(id).classList.remove("hidden");render();scrollTo(0,0);return}
- const tr=document.getElementById("transition");document.getElementById("anim").textContent=icon;document.getElementById("caption").textContent=icon==="🧳"?"Apriamo la valigia…":icon==="📖"?"Apriamo il diario…":icon==="📸"?"Prepariamo i ricordi…":icon==="🎟️"?"Controlliamo le prenotazioni…":"Vediamo la giornata…";tr.classList.add("show");
- setTimeout(()=>{tr.classList.remove("show");screens.forEach(x=>document.getElementById(x).classList.add("hidden"));document.getElementById(id).classList.remove("hidden");render();scrollTo(0,0)},850)
-}
-function render(){renderHome();renderTrip();renderDays();renderBags();renderBookings();renderGallery();renderDiary()}
-function renderHome(){document.getElementById("tripCount").textContent=data.trips.length;document.getElementById("memoryCount").textContent=data.trips.reduce((n,t)=>n+(t.diary?.length||0)+(t.photos?.length||0),0);const r=document.getElementById("trips");r.innerHTML=data.trips.map((t,i)=>`<button class="trip-card" onclick="openTrip(${i})"><div class="trip-cover" style="${t.photo?`background-image:url('${t.photo}')`:''}"><div><h3>${esc(t.name)}</h3><p>${esc(t.country||"")} · ${esc(t.start||"")} — ${esc(t.end||"")}</p></div></div><div class="trip-foot"><span>${days(t).length} giorni · ${(t.diary||[]).length+(t.photos||[]).length} ricordi</span><span>Apri ›</span></div></button>`).join("")||`<div class="summary" style="text-align:center;color:var(--muted)">Crea il vostro primo viaggio con ＋ Nuovo 💗</div>`}
-function newTrip(){open("Nuovo viaggio",`<div class="field"><label>Nome città</label><input id="tn" placeholder="Es. Nome città"></div><div class="field"><label>Paese</label><input id="tc" placeholder="Es. Italia"></div><div class="field"><label>Data inizio</label><input id="ts" type="date"></div><div class="field"><label>Data fine</label><input id="te" type="date"></div><div class="field"><label>Foto di sfondo</label><input id="tp" type="file" accept="image/*"></div>`,()=>{const f=document.getElementById("tp").files[0];if(f){const rd=new FileReader();rd.onload=e=>createTrip(e.target.result);rd.readAsDataURL(f)}else createTrip("")})}
-function createTrip(photo){let n=document.getElementById("tn").value.trim()||"Nome città",c=document.getElementById("tc").value.trim(),s=document.getElementById("ts").value,e=document.getElementById("te").value;if(!s||!e){alert("Inserisci entrambe le date.");return}let t={name:n,country:c,start:s,end:e,photo,days:makeDays(s,e),bags:{m:[],t:[]},bookings:[],photos:[],diary:[]};data.trips.push(t);data.active=data.trips.length-1;closeModal();save();go("trip")}
-function makeDays(s,e){let a=[],d=new Date(s+"T12:00:00"),z=new Date(e+"T12:00:00"),i=1;while(d<=z){a.push({date:d.toLocaleDateString("it-IT",{day:"numeric",month:"long"}),title:i===1?"Arrivo":"Giornata da organizzare",items:[],outfit:{m:"",t:""},carry:[]});d.setDate(d.getDate()+1);i++}return a}
-function days(t){return t.days||[]}
-function openTrip(i){data.active=i;save();go("trip")}
-function current(){return data.trips[data.active]}
-function renderTrip(){let t=current();if(!t)return;document.getElementById("tripName").textContent=t.name+" ✈️";document.getElementById("tripMeta").textContent=(t.country? t.country+" · ":"")+t.start+" — "+t.end;document.getElementById("tripCover").style.backgroundImage=t.photo?`url('${t.photo}')`:"linear-gradient(135deg,#efc4d5,#e6b39d,#afd7df)";document.getElementById("tripDays").textContent=t.days.length;document.getElementById("tripMem").textContent=t.photos.length+t.diary.length;let q=Math.ceil((new Date(t.start)-new Date())/86400000);document.getElementById("tripCountdown").textContent=q>0?q:"♡"}
-function renderDays(){let t=current(),r=document.getElementById("days");if(!t||!r)return;r.innerHTML=t.days.map((d,i)=>`<div class="day"><div class="dayhead" onclick="editDay(${i})"><div><h3>Giorno ${i+1} · ${d.date}</h3><small>${esc(d.title)}</small></div><span>›</span></div><div class="daybody">${d.items.map((x,j)=>`<div class="item"><b>${esc(x.time||"—")}</b><strong>${esc(x.name)}</strong><span>${esc(x.details||"")}</span>${x.booking!=null?`<div class="tag">🎟️ Prenotazione collegata</div>`:""}</div>`).join("")||`<div style="font-size:12px;color:var(--muted)">Nessuna attività ancora.</div>`}<div style="margin-top:10px"><button class="tag" onclick="editOutfit(${i})">👗 Outfit</button><button class="tag" onclick="editCarry(${i})">🎒 ${d.carry.length} cose da portare</button><button class="tag" onclick="go('gallery','📸')">📸 Foto</button><button class="tag" onclick="go('diary','📖')">📝 Diario</button></div></div></div>`).join("")}
-function editDay(i){let t=current(),d=t.days[i];
-open("Giorno "+(i+1),`<div class="field"><label>Nome giornata</label><input id="dn" value="${attr(d.title)}"></div><div class="field"><label>Attività</label>${d.items.map((x,j)=>`<div class="row"><div class="row-main"><strong>${esc(x.name||"Attività")}</strong><small>${esc(x.time||"—")}${x.details?" · "+esc(x.details):""}</small></div><button class="x" onclick="removeActivity(${i},${j})">×</button></div>`).join("")}<button class="add" onclick="addActivity(${i})">＋ Aggiungi attività</button></div><div class="field"><label>Outfit</label><div class="row"><div class="row-main"><strong>🎀 Michelle</strong><small>${esc(d.outfit.m||"Nessun outfit inserito")}</small></div><button class="add" onclick="editOutfit(${i})">Modifica</button></div><div class="row"><div class="row-main"><strong>🩵 Matteo</strong><small>${esc(d.outfit.t||"Nessun outfit inserito")}</small></div><button class="add" onclick="editOutfit(${i})">Modifica</button></div></div><div class="field"><label>Cose da portare</label><div class="row"><div class="row-main"><strong>🎒 ${d.carry.length} elementi</strong><small>${esc(d.carry.join(" · ")||"Nessuna cosa inserita")}</small></div><button class="add" onclick="editCarry(${i})">Modifica</button></div></div>`,()=>{d.title=document.getElementById("dn").value;save()})}
-function removeActivity(i,j){current().days[i].items.splice(j,1);save();closeModal();setTimeout(()=>editDay(i),50)}
-function editOutfit(i){let d=current().days[i];open("👗 Outfit della giornata",`<div class="field"><label>Outfit Michelle</label><input id="om" value="${attr(d.outfit.m)}" placeholder="Nome outfit"></div><div class="field"><label>Foto outfit Michelle</label><input id="omf" type="file" accept="image/*"></div><div class="field"><label>Outfit Matteo</label><input id="ot" value="${attr(d.outfit.t)}" placeholder="Nome outfit"></div><div class="field"><label>Foto outfit Matteo</label><input id="otf" type="file" accept="image/*"></div>`,()=>{d.outfit.m=document.getElementById("om").value;d.outfit.t=document.getElementById("ot").value;const fm=document.getElementById("omf").files[0],ft=document.getElementById("otf").files[0];const finish=()=>{save();renderDays()};if(fm){let r=new FileReader();r.onload=e=>{d.outfit.mPhoto=e.target.result;if(ft){let q=new FileReader();q.onload=z=>{d.outfit.tPhoto=z.target.result;finish()};q.readAsDataURL(ft)}else finish()};r.readAsDataURL(fm)}else if(ft){let q=new FileReader();q.onload=e=>{d.outfit.tPhoto=e.target.result;finish()};q.readAsDataURL(ft)}else finish()})}
-function editCarry(i){let d=current().days[i];open("🎒 Cose da portare",`<div class="field"><label>Lista</label><textarea id="cc" rows="8" placeholder="Una cosa per riga">${esc(d.carry.join("\n"))}</textarea></div>`,()=>{d.carry=document.getElementById("cc").value.split("\n").map(x=>x.trim()).filter(Boolean);save()})}
-function addActivity(i){closeModal();setTimeout(()=>open("Nuova attività",`<div class="field"><label>Nome attività</label><input id="an"></div><div class="field"><label>Orario</label><input id="at" type="time"></div><div class="field"><label>Dettagli</label><textarea id="ax" rows="3"></textarea></div><div class="field"><label>Prenotazione</label><select id="ab"><option value="">Nessuna</option>${current().bookings.map((b,j)=>`<option value="${j}">${esc(b.name)}</option>`).join("")}</select></div>`,()=>{current().days[i].items.push({name:document.getElementById("an").value||"Nuova attività",time:document.getElementById("at").value,details:document.getElementById("ax").value,booking:document.getElementById("ab").value===""?null:+document.getElementById("ab").value});save()}),100)}
-function renderBags(){let t=current();if(!t)return;["m","t"].forEach(w=>{let a=t.bags[w],done=a.filter(x=>x.done).length,p=a.length?Math.round(done/a.length*100):0;document.getElementById(w==="m"?"bm":"bt").textContent=done+" / "+a.length;document.getElementById(w==="m"?"bmbar":"btbar").style.width=p+"%";document.getElementById(w==="m"?"bmtext":"bttext").textContent=p+"% pronta";document.getElementById(w==="m"?"bagML":"bagTL").innerHTML=a.map((x,i)=>`<div class="row"><input type="checkbox" ${x.done?"checked":""} onchange="toggleBag('${w}',${i})"><div class="row-main"><strong>${esc(x.name)}</strong></div><button class="x" onclick="current().bags['${w}'].splice(${i},1);save()">×</button></div>`).join("")})}
-function addBag(w){open("＋ Aggiungi cosa da portare",`<div class="field"><label>Cosa?</label><input id="bagName"></div>`,()=>{let n=document.getElementById("bagName").value.trim();if(n)current().bags[w].push({name:n,done:false});save()})}
-function toggleBag(w,i){current().bags[w][i].done=!current().bags[w][i].done;save()}
-function renderBookings(){let t=current(),r=document.getElementById("bookingList");if(!t||!r)return;r.innerHTML=t.bookings.map((b,i)=>`<div class="row"><div class="row-main"><strong>${esc(b.name)}</strong><small>Giorno ${b.day+1} · ${b.start||"—"}${b.end?" — "+b.end:""} · ${esc(b.place||"")}</small>${b.notes?`<small>Note private: ${esc(b.notes)}</small>`:""}${b.link?`<small><a href="${attr(b.link)}" target="_blank">🔗 Apri prenotazione</a></small>`:""}${b.pdf?`<small>📄 ${esc(b.pdf)}</small>`:""}</div><button class="x" onclick="t.bookings.splice(${i},1);save()">×</button></div>`).join("")||`<div class="summary">Nessuna prenotazione ancora.</div>`}
-function addBooking(){let t=current();open("＋ Nuova prenotazione",`<div class="field"><label>Nome</label><input id="bn"></div><div class="field"><label>Giorno</label><select id="bd">${t.days.map((d,i)=>`<option value="${i}">Giorno ${i+1} · ${d.date}</option>`).join("")}</select></div><div class="field"><label>Ora inizio</label><input id="bs" type="time"></div><div class="field"><label>Ora fine</label><input id="be" type="time"></div><div class="field"><label>Punto di incontro</label><input id="bp"></div><div class="field"><label>Note private</label><textarea id="bnote" rows="3"></textarea></div><div class="field"><label>Link prenotazione</label><input id="bl" type="url"></div><div class="field"><label>PDF biglietti</label><input id="bpdf" type="file" accept="application/pdf"></div>`,()=>{let f=document.getElementById("bpdf").files[0];t.bookings.push({name:document.getElementById("bn").value||"Prenotazione",day:+document.getElementById("bd").value,start:document.getElementById("bs").value,end:document.getElementById("be").value,place:document.getElementById("bp").value,notes:document.getElementById("bnote").value,link:document.getElementById("bl").value,pdf:f?f.name:""});save()})}
-function renderGallery(){let t=current(),r=document.getElementById("galleryGrid");if(!t||!r)return;let a=t.photos.filter(p=>filter==="Tutte"||p.cat===filter);document.getElementById("galleryTitle").textContent=filter==="Tutte"?"Foto":filter;r.innerHTML=a.map(p=>`<button class="photo" onclick="view('${p.url}')"><img src="${p.url}"></button>`).join("")||`<div style="grid-column:1/-1;color:var(--muted);font-size:13px">Nessuna foto in questa categoria.</div>`}
-function filterGallery(x){filter=x;renderGallery()}
-function photoPicker(){open("📸 Aggiungi foto",`<div class="field"><label>Categoria</label><select id="pc"><option>Michelle</option><option>Matteo</option><option>Panorama</option><option>Insieme</option></select></div><div class="field"><label>Foto</label><input id="pi" type="file" accept="image/*" multiple></div><div class="field"><label>Giorno</label><select id="pg">${current().days.map((d,i)=>`<option value="${i}">Giorno ${i+1} · ${d.date}</option>`).join("")}</select></div>`,()=>{let fs=[...document.getElementById("pi").files],cat=document.getElementById("pc").value,day=+document.getElementById("pg").value;fs.forEach(f=>{let rd=new FileReader();rd.onload=e=>{current().photos.push({url:e.target.result,cat,day});save()};rd.readAsDataURL(f)})})}
-function view(url){document.getElementById("viewerImg").src=url;document.getElementById("viewer").classList.add("show")}
-function closeViewer(){document.getElementById("viewer").classList.remove("show")}
-function renderDiary(){let t=current(),r=document.getElementById("diaryList");if(!t||!r)return;r.innerHTML=t.diary.map((m,i)=>`<div class="row" style="display:block"><div style="display:flex"><div class="row-main"><strong>${esc(m.author)} · ${esc(m.day)}</strong><small>${esc(m.title||"Ricordo")}</small></div><button class="x" onclick="t.diary.splice(${i},1);save()">×</button></div><p style="font-size:13px;line-height:1.45">${esc(m.text)}</p>${m.photo?`<div class="photo" style="width:100px"><img src="${m.photo}"></div>`:""}<div style="margin-top:10px"><button class="add" onclick="addComment(${i})">💬 ${m.comments?.length||0} commenti · Aggiungi commento</button></div><div style="margin-top:8px">${(m.comments||[]).map(c=>`<div style="background:var(--soft);border-radius:12px;padding:8px 10px;margin-top:6px;font-size:12px"><b>${esc(c.author)}</b><br>${esc(c.text)}</div>`).join("")}</div></div>`).join("")||`<div class="summary">Ancora nessun ricordo. Scrivete il primo 💗</div>`}
-function addMemory(){let t=current();open("＋ Nuovo ricordo",`<div class="field"><label>Chi lo ha scritto?</label><select id="ma"><option>Michelle</option><option>Matteo</option></select></div><div class="field"><label>Giorno</label><select id="md">${t.days.map((d,i)=>`<option value="${i}">Giorno ${i+1} · ${d.date}</option>`).join("")}</select></div><div class="field"><label>Titolo</label><input id="mt"></div><div class="field"><label>Ricordo</label><textarea id="mx" rows="5"></textarea></div><div class="field"><label>Foto opzionale</label><input id="mf" type="file" accept="image/*"></div>`,()=>{let f=document.getElementById("mf").files[0],base={author:document.getElementById("ma").value,day:t.days[+document.getElementById("md").value].date,title:document.getElementById("mt").value,text:document.getElementById("mx").value,photo:"",comments:[]};if(f){let rd=new FileReader();rd.onload=e=>{base.photo=e.target.result;t.diary.push(base);save()};rd.readAsDataURL(f)}else{t.diary.push(base);save()}})}
-function addComment(i){let m=current().diary[i];open("💬 Aggiungi commento",`<div class="field"><label>Chi commenta?</label><select id="ca"><option>Michelle</option><option>Matteo</option></select></div><div class="field"><label>Commento</label><textarea id="ct" rows="4" placeholder="Scrivi un commento…"></textarea></div>`,()=>{m.comments=m.comments||[];const text=document.getElementById("ct").value.trim();if(text)m.comments.push({author:document.getElementById("ca").value,text});save()})}
-function open(title,body,fn){document.getElementById("modalTitle").textContent=title;document.getElementById("modalBody").innerHTML=body;action=fn;document.getElementById("modal").classList.add("show")}
-function saveModal(){if(action)action();closeModal()}function closeModal(){document.getElementById("modal").classList.remove("show");action=null}
-function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}function attr(s){return esc(s)}
-document.addEventListener("DOMContentLoaded",()=>{
-  const add=document.querySelector("#home .section .add");
-  if(add)add.addEventListener("click",newTrip);
-});
-initShared();
+};
